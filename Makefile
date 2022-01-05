@@ -10,10 +10,10 @@ IMAGE_TAG ?= $(IMAGE_NAMESPACE):$(TEMPLATE)-latest
 ########################################################################################################################
 OS ?= $(shell uname)
 
-all: build test clean
+all: generate build test clean
 .PHONY: all
 
-build:
+generate:
 	set -x;
 	sed -e 's/%%DOCKER_IMAGE%%/$(BUILD_FROM)/g' $(TEMPLATE)/Dockerfile.template > $(TEMPLATE)/Dockerfile
 	#
@@ -24,6 +24,9 @@ ifeq ($(OS),Darwin)
 else
 	sed -i 's/%%DOCKER_TEMPLATE%%/$(TEMPLATE)/g' $(TEMPLATE)/Dockerfile
 endif
+.PHONY: generate
+
+build:
 	docker build -f $(TEMPLATE)/Dockerfile . -t $(IMAGE_TAG)
 .PHONY: build
 

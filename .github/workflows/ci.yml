@@ -37,6 +37,10 @@ jobs:
           echo "BUILD_FROM=${BUILD_FROM}" >> $GITHUB_ENV
           echo "VERSION=${RELEASE_VERSION:1}" >> $GITHUB_ENV
 
+      - name: Generate Dockerfile template
+        run: |
+          make generate
+
       - name: Docker Meta
         id: meta
         uses: docker/metadata-action@v3
@@ -72,7 +76,8 @@ jobs:
       - name: Build and Export to Docker
         uses: docker/build-push-action@v2
         with:
-          context: ./dist/${{ env.TEMPLATE }}
+          context: .
+          file: ./${{ env.TEMPLATE }}/Dockerfile
           load: true
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=registry,ref=${{ env.IMAGE_TAG }}
@@ -92,7 +97,8 @@ jobs:
       - name: Push Docker Image
         uses: docker/build-push-action@v2
         with:
-          context: ./dist/${{ env.TEMPLATE }}
+          context: .
+          file: ./${{ env.TEMPLATE }}/Dockerfile
           ### For Cross Platform OSX builds uncomment these lines
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
