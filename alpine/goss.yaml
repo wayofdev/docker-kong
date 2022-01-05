@@ -1,0 +1,53 @@
+port:
+  "tcp:8000":
+    listening: true
+  "tcp:8001":
+    listening: true
+  "tcp:8443":
+    listening: true
+
+file:
+  /etc/kong/kong.conf:
+    filetype: file
+    exists: true
+    mode: "0644"
+    contains:
+      - 'database = off'
+  /etc/kong/kong.yaml:
+    filetype: file
+    exists: true
+    mode: "0644"
+    contains:
+      - '_format_version: "2.1"'
+
+package:
+  luarocks:
+    installed: true
+
+command:
+  "luarocks show --mversion oidc-client-auth":
+    stdout:
+      - "1.1.0"
+    exit-status: 0
+  "luarocks show --mversion lua-resty-openidc":
+    stdout:
+      - "1.6.0"
+    exit-status: 0
+  "luarocks show --mversion kong-spec-expose":
+    stdout:
+      - "1.2"
+    exit-status: 0
+  "luarocks show --mversion lua-resty-redis-connector":
+    stdout:
+      - "0.11"
+    exit-status: 0
+  ### Plain / without SSL
+  "curl -ksI http://localhost:8000 -o/dev/null -w '%{http_version}\n'":
+    stdout:
+      - "1"
+    exit-status: 0
+  ### SSL enabled
+  "curl -ksI --insecure https://localhost:8443 -o/dev/null -w '%{http_version}\n'":
+    stdout:
+      - "2"
+    exit-status: 0

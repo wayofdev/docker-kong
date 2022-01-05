@@ -1,0 +1,35 @@
+FROM kong:%%DOCKER_IMAGE%%
+
+# Labels
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md
+LABEL "maintainer"="lotyp <lotyp7@gmail.com>"
+LABEL "vendor"="wayofdev"
+LABEL "org.opencontainers.image.authors"="lotyp <lotyp7@gmail.com>"
+LABEL "org.opencontainers.image.url"="https://hub.docker.com/r/wayofdev/kong"
+LABEL "org.opencontainers.image.documentation"="https://github.com/wayofdev/docker-kong"
+LABEL "org.opencontainers.image.source"="https://github.com/wayofdev/docker-kong"
+LABEL "org.opencontainers.image.vendor"="wayofdev"
+LABEL "org.opencontainers.image.licenses"="MIT"
+LABEL "org.opencontainers.image.ref.name"="docker-kong"
+LABEL "org.opencontainers.image.title"="docker-kong"
+LABEL "org.opencontainers.image.description"="docker-kong"
+
+USER root
+
+COPY ./configs/* /etc/kong/
+COPY ./%%DOCKER_TEMPLATE%%/plugins /plugins
+
+RUN set -eux; \
+    apk add --no-cache \
+      git \
+      unzip \
+      luarocks \
+    && luarocks install kong-oidc 1.1.0 \
+    && luarocks install lua-resty-redis-connector \
+    && luarocks install kong-spec-expose 1.2 \
+    && cd /plugins \
+    && luarocks install oidc-client-auth-1.1.0-1.all.rock \
+    && chmod -R 644 /etc/kong/kong.yaml \
+    && chmod -R 644 /etc/kong/kong.conf
+
+USER kong

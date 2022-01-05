@@ -1,0 +1,7 @@
+process:
+  nginx:
+    running: true
+addr:
+  tcp://localhost:8001:
+    reachable: true
+    timeout: 500
