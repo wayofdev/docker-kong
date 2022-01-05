@@ -29,7 +29,7 @@ jobs:
         env:
           IMAGE_NAMESPACE: wayofdev/kong
           TEMPLATE: ${{ matrix.os_version }}
-          BUILD_FROM: ${{ kong_version }}-${{ matrix.os_version }}
+          BUILD_FROM: ${{ matrix.kong_version }}-${{ matrix.os_version }}
         run: |
           export RELEASE_VERSION=${GITHUB_REF#refs/*/}
           echo "IMAGE_NAMESPACE=${IMAGE_NAMESPACE}" >> $GITHUB_ENV
